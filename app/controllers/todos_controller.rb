@@ -7,13 +7,13 @@ class TodosController < ApplicationController
     @todos = Todo.all
     @scope = "all"
     if params[:scope] == "active"
-      @todos = @todos.where(complete: false)
+      @todos = @todos.active
       @scope = "active"
     elsif params[:scope] == "complete"
-      @todos = @todos.where(complete: true)
+      @todos = @todos.complete
       @scope = "complete"
     end
-    @uncomplete_todo = Todo.where(complete: false)
+    @uncomplete_todo = Todo.active
   end
 
   # GET /todos/1
