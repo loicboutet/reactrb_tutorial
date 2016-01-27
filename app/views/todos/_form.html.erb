@@ -13,7 +13,8 @@
     <ul class="todo-list">
 
         <li class="<%= "completed" if @todo.complete? %>">
-          <div class="view"><%= f.check_box :complete, :class => "toggle" %>
+          <div class="view">
+            <%= f.check_box :complete, :class => "toggle" %>
             <%= f.text_field :title, :class => "text_label" %>
           </div>
         </li>

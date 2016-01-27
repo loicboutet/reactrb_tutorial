@@ -325,6 +325,7 @@ label[for='toggle-all'] {
 .todo-list li .toggle {
   text-align: center;
   width: 40px;
+  display:block;
   /* auto, since non-WebKit browsers doesn't support input styling */
   height: auto;
   position: absolute;
@@ -534,7 +535,7 @@ html .clear-completed:active {
 
 
 .text_label{
-    white-space: pre-line;
+  white-space: pre-line;
   word-break: break-all;
   padding: 15px 60px 15px 15px;
   margin-left: 45px;
@@ -543,6 +544,9 @@ html .clear-completed:active {
   transition: color 0.4s;
   border:none;
   width:75%;
+  font-size:24px;
+  font-weight: 300;
+  color: #777;
 }
 
 .todo_button{
