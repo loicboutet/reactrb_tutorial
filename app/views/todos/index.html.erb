@@ -1,60 +1,38 @@
 <section class="todoapp">
-      <header class="header">
-        <h1>todos</h1>
-        <input class="new-todo" placeholder="What needs to be done?" autofocus="">
-      </header>
-      <section class="main" style="display: block;">
-        <input class="toggle-all" type="checkbox">
-        <label for="toggle-all">Mark all as complete</label>
-        <ul class="todo-list">
-          <% @todos.each do |todo| %>
-            <li data-id="1453679503221" class="<%= "completed" if todo.complete? %>">
-              <div class="view"><input class="toggle" type="checkbox" readonly>
-                <label><%= link_to todo.title, edit_todo_url(todo) %></label>
-                <%= link_to '', todo, class: :destroy, method: :delete, data: { confirm: 'Are you sure?' } %>
-              </div>
-            </li>
-          <% end %>
+  <header class="header">
+    <h1>todos</h1>
+    <h2 class="new_todo"><%= link_to 'New Todo', new_todo_path %></h2>
+    <!-- <input class="new-todo" placeholder="What needs to be done?" autofocus=""> -->
+  </header>
+  <section class="main" style="display: block;">
+    <!-- <input class="toggle-all" type="checkbox"> -->
+    <label for="toggle-all">Mark all as complete</label>
+    <ul class="todo-list">
+      <% @todos.each do |todo| %>
+        <li class="<%= "completed" if todo.complete? %>">
+          <div class="view"><input class="toggle" type="checkbox" <%= "checked" if todo.complete? %> onclick="return false">
+            <label><%= link_to todo.title, edit_todo_url(todo) %></label>
+            <%= link_to '', todo, class: :destroy, method: :delete, data: { confirm: 'Are you sure?' } %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  </section>
+  <footer class="footer" style="display: block;">
+    <span class="todo-count"><%= pluralize(@uncomplete_todo.count, 'item')%> left</span>
+    <ul class="filters">
+      <li>
+        <a href="/todos" class=<%= "selected" if @scope == "all" %>>All</a>
+      </li>
+      <li>
+        <a href="/todos?scope=active" class=<%= "selected" if @scope == "active" %>>Active</a>
+      </li>
+      <li>
+        <a href="/todos?scope=complete" class=<%= "selected" if @scope == "complete" %>>Completed</a>
+      </li>
+    </ul>
+    <button class="clear-completed" style="display: none;"></button>
+  </footer>
+</section>
 
-        </ul>
-      </section>
-      <footer class="footer" style="display: block;">
-        <span class="todo-count"><%= pluralize(@uncomplete_todo.count, 'item')%> left</span>
-        <ul class="filters">
-          <li>
-            <a href="/todos" class=<%= "selected" if @scope == "all" %>>All</a>
-          </li>
-          <li>
-            <a href="/todos?scope=active" class=<%= "selected" if @scope == "active" %>>Active</a>
-          </li>
-          <li>
-            <a href="/todos?scope=complete" class=<%= "selected" if @scope == "complete" %>>Completed</a>
-          </li>
-        </ul>
-        <button class="clear-completed" style="display: none;"></button>
-      </footer>
-    </section>
 
-<!-- <table>
-  <thead>
-    <tr>
-      <th>Title</th>
-      <th>Complete</th>
-      <th colspan="3"></th>
-    </tr>
-  </thead>
-
-  <tbody>
-      <tr>
-        <td><%#= todo.title %></td>
-        <td><%#= todo.complete %></td>
-        <td><%#= link_to 'Show', todo %></td>
-        <td><%#= link_to 'Edit', edit_todo_path(todo) %></td>
-        <td></td>
-      </tr>
-  </tbody>
-</table>
-
-<br> -->
-
-<%= link_to 'New Todo', new_todo_path %>

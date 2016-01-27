@@ -1,25 +1,34 @@
+
 <%= form_for(@todo) do |f| %>
-  <% if @todo.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= pluralize(@todo.errors.count, "error") %> prohibited this todo from being saved:</h2>
 
-      <ul>
-      <% @todo.errors.full_messages.each do |message| %>
-        <li><%= message %></li>
-      <% end %>
-      </ul>
-    </div>
-  <% end %>
+<section class="todoapp">
+  <header class="header">
+    <h1>todos</h1>
+    <h2 class="new_todo"><%= @title %></h2>
+    <!-- <input class="new-todo" placeholder="What needs to be done?" autofocus=""> -->
+  </header>
+  <section class="main" style="display: block;">
+    <!-- <input class="toggle-all" type="checkbox"> -->
+    <label for="toggle-all">Mark all as complete</label>
+    <ul class="todo-list">
 
-  <div class="field">
-    <%= f.label :title %><br>
-    <%= f.text_field :title %>
-  </div>
-  <div class="field">
-    <%= f.label :complete %><br>
-    <%= f.check_box :complete %>
-  </div>
-  <div class="actions">
-    <%= f.submit %>
-  </div>
+        <li class="<%= "completed" if @todo.complete? %>">
+          <div class="view"><%= f.check_box :complete, :class => "toggle" %>
+            <%= f.text_field :title, :class => "text_label" %>
+          </div>
+        </li>
+    </ul>
+  </section>
+  <footer class="footer" style="display: block;">
+    <ul class="filters">
+      <li>
+        <%= link_to 'Back', todos_path %>
+      </li>
+      <li>
+        <%= f.submit "Submit", :class => "todo_button" %>
+      </li>
+    </ul>
+    <button class="clear-completed" style="display: none;"></button>
+  </footer>
+</section>
 <% end %>

@@ -5,6 +5,12 @@ hr {
   border-bottom: 1px dashed #f7f7f7;
 }
 
+a{
+    color: inherit;
+    text-decoration: none;
+    cursor: auto;
+}
+
 .learn a {
   font-weight: normal;
   text-decoration: none;
@@ -519,3 +525,41 @@ html .clear-completed:active {
     bottom: 10px;
   }
 }
+
+.new_todo{
+    color: #777;
+    text-align: center;
+    padding-top:10px;
+}
+
+
+.text_label{
+    white-space: pre-line;
+  word-break: break-all;
+  padding: 15px 60px 15px 15px;
+  margin-left: 45px;
+  display: block;
+  line-height: 1.2;
+  transition: color 0.4s;
+  border:none;
+  width:75%;
+}
+
+.todo_button{
+    border-image: none;
+    border: none;
+    background-color: inherit;
+    color: #777;
+    border-color: rgb(175, 47, 47);
+    border: 1px solid;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+.filters li input.selected,
+.filters li input:hover {
+  border:1px;
+  border-style: solid;
+  cursor: auto;
+}
+

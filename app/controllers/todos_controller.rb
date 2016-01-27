@@ -6,6 +6,9 @@ class TodosController < ApplicationController
   def index
     @todos = Todo.all
     @scope = "all"
+    # if %w(active complete).include?(params[:scope])
+      # @todos = @todos.send(params[:scope].to_sym)
+      # @scope = params[:scope]
     if params[:scope] == "active"
       @todos = @todos.active
       @scope = "active"
@@ -24,10 +27,12 @@ class TodosController < ApplicationController
   # GET /todos/new
   def new
     @todo = Todo.new
+    @title = "New Todo"
   end
 
   # GET /todos/1/edit
   def edit
+    @title = "Edit Todo"
   end
 
   # POST /todos
@@ -51,7 +56,7 @@ class TodosController < ApplicationController
   def update
     respond_to do |format|
       if @todo.update(todo_params)
-        format.html { redirect_to @todo, notice: 'Todo was successfully updated.' }
+        format.html { redirect_to todos_url }
         format.json { render :show, status: :ok, location: @todo }
       else
         format.html { render :edit }
