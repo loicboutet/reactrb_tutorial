@@ -1,5 +1,3 @@
-== README
-
 # Getting started with React.rb and Rails
 
 ## How this tutorial works.
