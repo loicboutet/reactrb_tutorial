@@ -46,7 +46,7 @@ class TodosController < ApplicationController
   # DELETE /todos/1
   def destroy
     @todo.destroy
-    todos_url
+    redirect_to todos_url
   end
 
   private
