@@ -10,8 +10,11 @@
     <ul class="todo-list">
       <% @todos.each do |todo| %>
         <li class="<%= "completed" if todo.complete? %>">
-          <div class="view"><input class="toggle" type="checkbox" <%= "checked" if todo.complete? %> onclick="return false">
-            <label><%= link_to todo.title, edit_todo_url(todo) %></label>
+          <div class="view">
+            <%= link_to edit_todo_url(todo) do %>
+              <input class="toggle" type="checkbox" <%= "checked" if todo.complete? %> onclick="return  true">
+              <label><%= todo.title %></label>
+            <% end %>
             <%= link_to '', todo, class: :destroy, method: :delete, data: { confirm: 'Are you sure?' } %>
           </div>
         </li>
@@ -34,5 +37,3 @@
     <button class="clear-completed" style="display: none;"></button>
   </footer>
 </section>
-
-
