@@ -5,13 +5,10 @@
   <header class="header">
     <h1>todos</h1>
     <h2 class="new_todo"><%= @title %></h2>
-    <!-- <input class="new-todo" placeholder="What needs to be done?" autofocus=""> -->
   </header>
   <section class="main" style="display: block;">
-    <!-- <input class="toggle-all" type="checkbox"> -->
     <label for="toggle-all">Mark all as complete</label>
     <ul class="todo-list">
-
         <li class="<%= "completed" if @todo.complete? %>">
           <div class="view">
             <%= f.check_box :complete, :class => "toggle" %>

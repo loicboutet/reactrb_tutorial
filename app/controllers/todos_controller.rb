@@ -6,22 +6,11 @@ class TodosController < ApplicationController
   def index
     @todos = Todo.all
     @scope = "all"
-    # if %w(active complete).include?(params[:scope])
-      # @todos = @todos.send(params[:scope].to_sym)
-      # @scope = params[:scope]
-    if params[:scope] == "active"
-      @todos = @todos.active
-      @scope = "active"
-    elsif params[:scope] == "complete"
-      @todos = @todos.complete
-      @scope = "complete"
+    if %w(active complete).include?(params[:scope])
+      @todos = @todos.send(params[:scope].to_sym)
+      @scope = params[:scope]
     end
     @uncomplete_todo = Todo.active
-  end
-
-  # GET /todos/1
-  # GET /todos/1.json
-  def show
   end
 
   # GET /todos/new
@@ -36,43 +25,28 @@ class TodosController < ApplicationController
   end
 
   # POST /todos
-  # POST /todos.json
   def create
     @todo = Todo.new(todo_params)
-
-    respond_to do |format|
-      if @todo.save
-        format.html { redirect_to todos_url, notice: 'Todo was successfully created.' }
-        format.json { render :index, status: :created, location: @todo }
-      else
-        format.html { render :new }
-        format.json { render json: @todo.errors, status: :unprocessable_entity }
-      end
+    if @todo.save
+      redirect_to todos_url
+    else
+      render :new
     end
   end
 
   # PATCH/PUT /todos/1
-  # PATCH/PUT /todos/1.json
   def update
-    respond_to do |format|
-      if @todo.update(todo_params)
-        format.html { redirect_to todos_url }
-        format.json { render :show, status: :ok, location: @todo }
-      else
-        format.html { render :edit }
-        format.json { render json: @todo.errors, status: :unprocessable_entity }
-      end
+    if @todo.update(todo_params)
+      redirect_to todos_url
+    else
+      render :edit
     end
   end
 
   # DELETE /todos/1
-  # DELETE /todos/1.json
   def destroy
     @todo.destroy
-    respond_to do |format|
-      format.html { redirect_to todos_url, notice: 'Todo was successfully destroyed.' }
-      format.json { head :no_content }
-    end
+    todos_url
   end
 
   private
