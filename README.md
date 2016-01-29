@@ -81,7 +81,15 @@ which in most cases should be sufficient to load all your component code from th
 
 7. If you are using reactive-record the `components.rb` file will also require `app/models/_react_public_models.rb` which is the manifest file for the public models, and simply contains a `require_tree './public'` directive. If you need to order how the models are loaded you can add explicit requires to this file before the require_tree.
 
-8. It adds the following gems to your `Gemfile`:  
+9. It adds these lines to `application.rb`  
+`config.assets.paths << ::Rails.root.join('app', 'views').to_s`  
+If you are using reactive-record it will also add  
+`config.eager_load_paths += %W(#{config.root}/app/models/public)`  
+`config.autoload_paths += %W(#{config.root}/app/models/public)`  
+The effect of these lines is that the asset pipeline can load components from the views folder, and
+isomorphic models can be found by both the server and asset pipeline in the models/public folder.
+
+8. Finally it adds the following gems to your `Gemfile`:  
   `gem 'reactive-ruby'`  
   `gem 'react-rails', '~> 1.3.0'`  
   `gem 'opal-rails', '>= 0.8.1' `   
