@@ -21,19 +21,5 @@
       <% end %>
     </ul>
   </section>
-  <footer class="footer" style="display: block;">
-    <span class="todo-count"><%= pluralize(@uncomplete_todo.count, 'item')%> left</span>
-    <ul class="filters">
-      <li>
-        <a href="/todos" class=<%= "selected" if @scope == "all" %>>All</a>
-      </li>
-      <li>
-        <a href="/todos?scope=active" class=<%= "selected" if @scope == "active" %>>Active</a>
-      </li>
-      <li>
-        <a href="/todos?scope=complete" class=<%= "selected" if @scope == "complete" %>>Completed</a>
-      </li>
-    </ul>
-    <button class="clear-completed" style="display: none;"></button>
-  </footer>
+  <%= react_component "Footer", scope: @scope, uncomplete_todo: @uncomplete_todo %>
 </section>
