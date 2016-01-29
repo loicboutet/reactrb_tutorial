@@ -75,15 +75,15 @@ to your routes file.  This is how reactive record will send and receive active r
 
 5. If you are using reactive-record, then it also adds the `public` directory to `app/models`.  Any models in this directory will have reactive-record proxies loaded on the client.
 
-6. It creates the `app/views/components.rb` manifest file.  This file is a set of requires for all your ruby component code.  It ends with a  
-`require_tree './components'`   
-which in most cases should be sufficient to load all your component code from the `views/components` directory.  If you have specific component load ordering needs (which is rare) you can simply require specific files before the require_tree.  *Note - this manifest is loaded both on the client and in the prerendering engine.  Code that depends on browser specific data and functions can be conditionally loaded in the manifest so it will **not** load during prerendering.*
+6. It creates the `app/views/components.rb` manifest file.  This file is a set of requires for all your ruby component code.  The manifest ends with a `require_tree './components'`   
+which in most cases should be sufficient to load all your component code from the `views/components` directory.  If you have specific component load ordering needs (which is rare) you can simply require specific files before the require_tree.  *Note - this manifest is loaded both on the client and in the prerendering engine.  Code that depends on browser specific data and functions can be conditionally loaded in the manifest so it will not load during prerendering.*
 
 7. If you are using reactive-record the `components.rb` file will also require `app/models/_react_public_models.rb` which is the manifest file for the public models, and simply contains a `require_tree './public'` directive. If you need to order how the models are loaded you can add explicit requires to this file before the require_tree.
 
 9. It adds these lines to `application.rb`  
 `config.assets.paths << ::Rails.root.join('app', 'views').to_s`  
 If you are using reactive-record it will also add  
+`config.assets.paths << ::Rails.root.join('app', 'models').to_s` 
 `config.eager_load_paths += %W(#{config.root}/app/models/public)`  
 `config.autoload_paths += %W(#{config.root}/app/models/public)`  
 The effect of these lines is that the asset pipeline can load components from the views folder, and
