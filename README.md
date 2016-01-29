@@ -44,7 +44,7 @@ If you are following along on your computer run
 
 next: [Chapter 2 - Our first React.rb Component](/blob/02-our-first-react.rb-component)
 
-### Notes:
+### Chapter 1 Notes:
 
 #### `rails g reactrb:install` options:
 
@@ -60,13 +60,13 @@ Its recommend to install `--all`.  You can easily remove things later!
 
 In case you are interested, or perhaps want to customize the install here is what happens:
 
-1. It requires `'components'` and `'react_ujs'` at the start of your `application.js` file.  `components` is your manifest of react.rb components, and `react_ujs` is part of the react-rails preloader system.  
+1. It requires `'components'` and `'react_ujs'` at the start of your `application.js` file.  `components` is your manifest of react.rb components, and `react_ujs` is part of the react-rails prerendering system.  
 
 2. It adds the js code `Opal.load('components')` to the end of the `application.js` file.  This code will initialize all the ruby (opal) code referenced in the `components` manifest.
 
 3. If you are using reactive-record it adds  
 `route "mount ReactiveRecord::Engine => "/rr"`  
-to your routes file.  This is how reactive record will send and receive active record model updates from the client.  *Note you can change the mount path from `rr` to whatever you want if necessary*.
+to your routes file.  This is how reactive record will send and receive active record model updates from the client.  *Note - you can change the mount path from `rr` to whatever you want if necessary*.
 
 4. It adds the `components` directory to `app/views`.  This is the directory that all your components will be stored in.
 
