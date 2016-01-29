@@ -191,7 +191,7 @@ RSpec.configure do |config|
 
   Capybara.register_driver :selenium_with_firebug do |app|
     profile = Selenium::WebDriver::Firefox::Profile.new
-    profile.frame_position = ENV['DRIVER'][2]
+    profile.frame_position = ENV['DRIVER'] && ENV['DRIVER'][2]
     profile.enable_firebug
     Capybara::Selenium::Driver.new(app, :browser => :firefox, :profile => profile)
   end
@@ -200,10 +200,10 @@ RSpec.configure do |config|
 
   Capybara.default_max_wait_time = 20.seconds
 
-  if ENV['DRIVER'] =~ /^ff/
-    Capybara.javascript_driver = :selenium_with_firebug
-  else
+  if ENV['DRIVER'] =~ /^pg/
     Capybara.javascript_driver = :poltergeist
+  else
+    Capybara.javascript_driver = :selenium_with_firebug
   end
 
   config.include ComponentHelpers

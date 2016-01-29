@@ -16,7 +16,7 @@ To see the results of these changes you can view the `02-adding-a-react-componen
 
 Of course for best results clone this repo to your computer, follow the instructions for each chapter, and make the changes yourself.  Then run the test specs for the chapter:
 
-`bundle exec rspec chapter-xx/ -f d`
+`bundle exec rspec spec/chapter-xx.rb -f d`
 
 Some chapters (like this one) have extra notes at the end of the page with details you may be interested in.
 
@@ -40,7 +40,7 @@ In our case we are going to make the `Todo` model public by moving it from  `app
 
 If you are following along on your computer run
 
-`bundle exec rspec chapter-1/`
+`bundle exec rspec spec/chapter-1.rb -f d`
 
 next: [Chapter 2 - Our first React.rb Component](/blob/02-our-first-react.rb-component)
 
