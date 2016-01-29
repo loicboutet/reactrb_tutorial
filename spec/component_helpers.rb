@@ -21,7 +21,11 @@ module ComponentHelpers
           mock_time = render_params.delete(:mock_time)
           style_sheet = render_params.delete(:style_sheet)
           javascript = render_params.delete(:javascript)
+          code = render_params.delete(:code)
           page = "<%= react_component @component_name, @component_params, { prerender: #{render_on != :client_only} } %>"
+          if code
+            page = "<script type='text/javascript'>\n#{code}\n</script>"+page
+          end
           if (render_on != :server_only && !render_params[:layout]) || javascript
             page = "<%= javascript_include_tag '#{javascript || 'application'}' %>\n"+page
           end
@@ -66,12 +70,13 @@ module ComponentHelpers
 
   end
 
-  def mount(component_name, params=nil, opts = {})
+  def mount(component_name, params=nil, opts = {}, &block)
     unless params
       params = opts
       opts = {}
     end
     test_url = build_test_url_for(opts.delete(:controller))
+    opts[:code] = Opal.compile("def mount(*args, &block); Object.class_eval &block; end\n#{block.source}") if block
     Rails.cache.write(test_url, [component_name, params, opts])
     visit test_url
   end
