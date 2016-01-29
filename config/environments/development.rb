@@ -1,4 +1,6 @@
 Rails.application.configure do
+  config.react.variant = :development
+  config.watchable_files.concat Dir["#{config.root}/app/models/public/*.rb"]
   # Settings specified here will take precedence over those in config/application.rb.
 
   # In the development environment your application's code is reloaded on
