@@ -48,13 +48,13 @@ module ComponentHelpers
       end
 
       begin
-        routes = Catprint::Application.routes
+        routes = Basictodo::Application.routes
         routes.disable_clear_and_finalize = true
         routes.clear!
         routes.draw do
           get "/#{route_root}/:id", to: "#{route_root}#test"
         end
-        Catprint::Application.routes_reloader.paths.each{ |path| load(path) }
+        Basictodo::Application.routes_reloader.paths.each{ |path| load(path) }
         routes.finalize!
         ActiveSupport.on_load(:action_controller) { routes.finalize! }
       ensure
