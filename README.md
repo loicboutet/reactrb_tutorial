@@ -1,99 +1,133 @@
 # Getting started with React.rb and Rails
 
-## How this tutorial works.
 
-This tutorial will cover the steps in adding [react.rb](http://reactrb.org) and react components (written in Ruby of course) to a simple rails Todo app.
+## Chapter 2 - Our first React.rb Component
 
-The tutorial is organized as a series of tagged branches in this repo.  You are currently on the `01-introduction` branch.
+Now that we have installed React.rb and that everything is running, it's time to make our first component !
 
-In each branch the `README` file will be the next chapter of the tutorial.
+In order to do that, we will use the generator :
 
-At the end of each chapter you can move to the next tagged branch, where the changes described in the previous chapter will be stored.
+* run `bundle exec rails g reactrb:component todos::footer`
 
-For example in this chapter we are going to add the `reactive_ruby_generator` gem to the app, and use it to install react.rb, reactive-record and reactive-router.
+A file "footer.rb" will be created in app/views/components/todos/
+As you can see our component is a normal ruby class. You will notice that our class has a render method. It this method
+that is called when the component is displayed (or rendered). We will now put the code of our footer inside this component
+to see how a component is displayed.
 
-To see the results of these changes you can view the `02-adding-a-react-component` chapter.
+So we want our component to render the following code from app/views/todos/index.html.erb :
+```
+  <footer class="footer" style="display: block;">
+    <span class="todo-count"><%= pluralize(@uncomplete_todo.count, 'item')%> left</span>
+    <ul class="filters">
+      <li>
+        <a href="/todos" class=<%= "selected" if @scope == "all" %>>All</a>
+      </li>
+      <li>
+        <a href="/todos?scope=active" class=<%= "selected" if @scope == "active" %>>Active</a>
+      </li>
+      <li>
+        <a href="/todos?scope=complete" class=<%= "selected" if @scope == "complete" %>>Completed</a>
+      </li>
+    </ul>
+    <button class="clear-completed" style="display: none;"></button>
+  </footer>
+```
 
-Of course for best results follow along yourself:
+In a React.rb component, much like you can write html inside the javascript with jsx, there is a very simple dsl to write html
+inside the ruby code. Our previous html becomes :
 
-1. clone this repo to your computer
-2. run `bundle exec rake db:migrate` and `bundle exec rake db:test:prepare`
-3. follow the instructions for each chapter,
-4. Then run the test specs for the chapter: `bundle exec rspec spec/chapter-xx.rb -f d`
+```ruby
+  footer(class: "footer", style: {display: "block"}) do
+    span(class: "todo-count") do
+      "#{params.uncomplete_todo.count} #{params.uncomplete_todo.count > 1 ? "items" : "item"} left"
+    end
+    ul(class: "filters") do
+      li { a(class: "#{'selected' if params.scope == "all"}", href: "/todos") { "All" }}
+      li { a(class: "#{'selected' if params.scope == "complete"}", href: "/todos?scope=complete") { "Completed" }}
+      li { a(class: "#{'selected' if params.scope == "active"}", href: "/todos?scope=active") { "Active" }}
+    end
+    button(class: "clear-completed", style: {display: "none"}) { "clear completed" }
+  end
+```
 
-Some chapters (like this one) have extra notes at the end of the page with details you may be interested in.
+A few things to notice here :
+1. First, we changed the `<%= pluralize(@uncomplete_todo.count, 'item')%>` which became `"#{params.uncomplete_todo.count} #{params.uncomplete_todo.count > 1 ? "items" : "item"} left"`. Why? We have to remember that this React.rb component will be executed both by the server when prerendering AND by the client's browser after being compiled by Opal. the `pluralize`method is a rails helper, and Opal does not provide at the moment an implementation of the rails helper. So we cannot use it.
+2. we use `params.uncomplete_todo` and `params.scope` instead of @uncomplete_todo and @scope. Why? Same as above, we are executing this code on the browser. @uncomplete_todo and @scope are instance variable of the controller, so we do not have access to them when the code will be executed on the client. In order to solve the problem we have to put at the top of our app/views/components/todos/footer.rb file :
 
-## Chapter 1 - Introduction
+```
+  param :scope
+  param :uncomplete_todo
+```
 
-To update your new or existing Rails 4 app, you can use the `reactive_rails_generator` gem.
+This way we can set those params when invoking the component. Params are very important for React. When you change a param of a component, React automatically re-render the component. We will see after that this is very useful !
 
-1. add `gem reactive_rails_generator` to the development section of your app Gemfile.
-2. run `bundle install`
-3. run `bundle exec rails g reactrb:install --all`
-4. run `bundle update`
+So our final app/views/components/todos/footer.rb file should be :
 
-You will now find that you have
+```ruby
+module Components
+  module Todos
+    class Footer < React::Component::Base
 
-* a `components` directory inside of `app/views` where your react components (which are simply react views written in ruby) will live, and
+      param :scope
+      param :uncomplete_todo
 
-* a `public` directory inside of `app/models` where any models that you want accessible to your components (which will run on the browser) will live.
-*Don't worry!  Access to model data is protected by a [Hobo style permissions system](http://hobocentral.net/manual/permissions).*
+      def render
+        footer(class: "footer", style: {display: "block"}) do
+          span(class: "todo-count") do
+            "#{params.uncomplete_todo.count} #{params.uncomplete_todo.count > 1 ? "items" : "item"} left"
+          end
+          ul(class: "filters") do
+            li { a(class: "#{'selected' if params.scope == "all"}", href: "/todos") { "All" }}
+            li { a(class: "#{'selected' if params.scope == "complete"}", href: "/todos?scope=complete") { "Completed" }}
+            li { a(class: "#{'selected' if params.scope == "active"}", href: "/todos?scope=active") { "Active" }}
+          end
+          button(class: "clear-completed", style: {display: "none"}) { "clear completed" }
+        end
+      end
+    end
+  end
+end
+```
 
-In our case we are going to make the `Todo` model public by moving it from  `app/models` to `app/models/public/`.
+So now our component is ready ! We just need to call it inside app/views/todos/index.html.erb :
 
-If you are following along on your computer run
+```
+<section class="todoapp">
+  <header class="header">
+    <h1>todos</h1>
+    <h2 class="new_todo"><%= link_to 'New Todo', new_todo_path %></h2>
+    <!-- <input class="new-todo" placeholder="What needs to be done?" autofocus=""> -->
+  </header>
+  <section class="main" style="display: block;">
+    <!-- <input class="toggle-all" type="checkbox"> -->
+    <label for="toggle-all">Mark all as complete</label>
+    <ul class="todo-list">
+      <% @todos.each do |todo| %>
+        <li class="<%= "completed" if todo.complete? %>">
+          <div class="view">
+            <%= link_to edit_todo_url(todo) do %>
+              <input class="toggle" type="checkbox" <%= "checked" if todo.complete? %> onclick="return  true">
+              <label><%= todo.title %></label>
+            <% end %>
+            <%= link_to '', todo, class: :destroy, method: :delete, data: { confirm: 'Are you sure?' } %>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  </section>
+  <%= react_component "Footer", scope: @scope, uncomplete_todo: @uncomplete_todo %>
+</section>
+```
 
-`bundle exec rspec spec/chapter-1.rb -f d`
+You can reload the page and everything... should be the same :) We have just made our first component which is display some HTML according to some params. If you want to check that it is in fact React.rb displaying our footer you can open web tools and check the console. You should see something similar to :
+```
+************************ React Browser Context Initialized ****************************
+isomorphic_helpers.rb:37Reactive record prerendered data being loaded: [Object]
+```
 
-next: [Chapter 2 - Our first React.rb Component](/blob/02-our-first-react.rb-component)
+Which is a sure sign that React.rb did some work ! Congratulation !
 
-### Chapter 1 Notes:
-
-#### `rails g reactrb:install` options:
-
-
-`--reactive-router` to install reactive-router  
-`--reactive-record` to install reactive-record  
-`--opal-jquery` to install opal-jquery in the js application manifest  
-`--all` to do all the above
-
-Its recommend to install `--all`.  You can easily remove things later!
 
 #### How it works:
 
-In case you are interested, or perhaps want to customize the install here is what happens:
-
-1. It requires `'components'` and `'react_ujs'` at the start of your `application.js` file.  `components` is your manifest of react.rb components, and `react_ujs` is part of the react-rails prerendering system.  
-
-2. It adds the js code `Opal.load('components')` to the end of the `application.js` file.  This code will initialize all the ruby (opal) code referenced in the `components` manifest.
-
-3. If you are using reactive-record it adds  
-`route "mount ReactiveRecord::Engine => "/rr"`  
-to your routes file.  This is how reactive record will send and receive active record model updates from the client.  *Note - you can change the mount path from `rr` to whatever you want if necessary*.
-
-4. It adds the `components` directory to `app/views`.  This is the directory that all your components will be stored in.
-
-5. If you are using reactive-record, then it also adds the `public` directory to `app/models`.  Any models in this directory will have reactive-record proxies loaded on the client.
-
-6. It creates the `app/views/components.rb` manifest file.  This file is a set of requires for all your ruby component code.  The manifest ends with a `require_tree './components'`   
-which in most cases should be sufficient to load all your component code from the `views/components` directory.  If you have specific component load ordering needs (which is rare) you can simply require specific files before the require_tree.  *Note - this manifest is loaded both on the client and in the prerendering engine.  Code that depends on browser specific data and functions can be conditionally loaded in the manifest so it will not load during prerendering.*
-
-7. If you are using reactive-record the `components.rb` file will also require `app/models/_react_public_models.rb` which is the manifest file for the public models, and simply contains a `require_tree './public'` directive. If you need to order how the models are loaded you can add explicit requires to this file before the require_tree.
-
-9. It adds these lines to `application.rb`  
-`config.assets.paths << ::Rails.root.join('app', 'views').to_s`  
-If you are using reactive-record it will also add  
-`config.assets.paths << ::Rails.root.join('app', 'models').to_s` 
-`config.eager_load_paths += %W(#{config.root}/app/models/public)`  
-`config.autoload_paths += %W(#{config.root}/app/models/public)`  
-The effect of these lines is that the asset pipeline can load components from the views folder, and
-isomorphic models can be found by both the server and asset pipeline in the models/public folder.
-
-8. Finally it adds the following gems to your `Gemfile`:  
-  `gem 'reactive-ruby'`  
-  `gem 'react-rails', '~> 1.3.0'`  
-  `gem 'opal-rails', '>= 0.8.1' `   
-  `gem 'therubyracer', platforms: :ruby`    
-  `gem 'react-router-rails', '~>0.13.3' ` (if using reactive-router)  
-  `gem 'reactive-router'` (if using reactive router)  
-  `gem 'reactive-record'` (if using reactive-record)
+TODO
