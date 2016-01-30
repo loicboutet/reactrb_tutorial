@@ -1,5 +1,21 @@
 # Getting started with React.rb and Rails
 
+## Chapter 3 - A Component linked to a Model
+
+So in chapter 2 we have seen how to display a basic component. Now we will make a component to update our Todo model.
+See the list of todos? Noticed how annoying it is to have to go to another page in order to edit them? Time to improve
+our UI. Let's do an in-place editing of those todos.
+
+First we have to create our component file. Like last time we can do :
+* `bundle exec rails g reactrb:component Todos::TodoItem`
+
+Which will create a file app/views/components/todos/todo_item.rb
+An interesting thing to consider here, is the name we gave the component. We did not call it "Todo". Why? Because components
+are *classes*. Which means that the class of our component would be called "Todo"... Which is the class name of the *model* Todo.
+
+
+
+
 
 ## Chapter 2 - Our first React.rb Component
 
@@ -7,7 +23,7 @@ Now that we have installed React.rb and that everything is running, it's time to
 
 In order to do that, we will use the generator :
 
-* run `bundle exec rails g reactrb:component todos::footer`
+* run `bundle exec rails g reactrb:component Todos::Footer`
 
 A file "footer.rb" will be created in app/views/components/todos/
 As you can see our component is a normal ruby class. You will notice that our class has a render method. It this method
