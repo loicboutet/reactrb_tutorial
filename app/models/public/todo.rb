@@ -1,6 +1,6 @@
 class Todo < ActiveRecord::Base
 
   scope :complete, -> () {where(:complete => true)}
-  scope :active, -> () {where(:complete => false)}
+  scope :active, -> () {where.not(:complete => true)}
 
 end

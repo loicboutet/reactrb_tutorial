@@ -11,6 +11,7 @@ class TodosController < ApplicationController
       @scope = params[:scope]
     end
     @uncomplete_todo = Todo.active
+    render_component todos:@todos, scope:@scope, uncomplete_todo: @uncomplete_todo
   end
 
   # GET /todos/new

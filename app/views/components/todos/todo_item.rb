@@ -24,7 +24,7 @@ module Components
             TitleEdit todo: params.todo, on_blur: -> {cancel_edit}, on_enter: -> {cancel_edit}
           else
             div(class: "view")do
-              input(type: :checkbox, (params.todo.complete ? :cdefaultChecked : :unchecked) => true, :class => "toggle").on(:click) do
+              input(type: :checkbox, (params.todo.complete ? :defaultChecked : :unchecked) => true, :class => "toggle").on(:click) do
                 params.todo.complete = !params.todo.complete
                 params.todo.save
               end
