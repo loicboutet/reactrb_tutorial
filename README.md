@@ -83,38 +83,33 @@ I'm sure you're getting the hang of it !
 
 Time to get serious. We said we want to do some inline editing. When we double click the title label we want to have an input showing at its place so we can fiddle with the title. And then when we press enter, the new title should be saved.
 
-OK first, let's add the input that will be displayed to edit the title :
-
-```
-li(class: "#{params.todo.complete ? "completed" : ""}") do
-  div(class: "view")do
-    input(type: :checkbox, (params.todo.complete ? :defaultChecked : :unchecked) => true, :class => "toggle").on(:click) do
-      params.todo.complete = !params.todo.complete
-      params.todo.save
-    end
-    label do
-      params.todo.title
-    end
-    a(class: :destroy).on(:click) do
-      params.todo.destroy
-    end
-  end
-  input(class: "edit", value: params.todo.title)
-end
-```
-
-Now we have to be able to know when we are editing the title, and when we are not. To do that we will use a "state". In react a state is like an instance variable that notifies react when it changes. Anytime a state changes, react knows it needs to re-render the component.
+OK first we have to be able to know when we are editing the title, and when we are not. To do that we will use a "state". In react a state is like an instance variable that notifies react when it changes. Anytime a state changes, react knows it needs to re-render the component.
 So we will add an editing state, which will be false by default :
 
 ```
   define_state editing: false
 ```
 
-Now that we have our state, we will add an editing class to the li when editing is true. This class is used to hide/show the view div and our last input :
+Now that we have our state, we will add an editing class to the li when editing is true and when it is true we will display an input, otherwise we will display our old display code :
 
 ```
 li(class: "#{params.todo.complete ? "completed" : ""} #{state.editing ? "editing" : ""}") do
-  ...
+  if state.editing
+    input(class: "edit", defaultValue: params.todo.title)
+  else
+    div(class: "view")do
+      input(type: :checkbox, (params.todo.complete ? :cdefaultChecked : :unchecked) => true, :class => "toggle").on(:click) do
+        params.todo.complete = !params.todo.complete
+        params.todo.save
+      end
+      label do
+        params.todo.title
+      end
+      a(class: :destroy).on(:click) do
+        params.todo.destroy
+      end
+    end
+  end
 end
 ```
 
@@ -136,13 +131,14 @@ Hmm ... right. We should really take care of that. So the solution would be to p
 
 ```
 after_update do
-  edit_element = Element[".edit"]
-  edit_element.focus
+  if state.editing
+    edit_element = Element[".edit"]
+    edit_element.focus
+  end
 end
 ```
 
-First we select our input. Actually Element[".edit"] is the syntax for the opal-jquery wrapper, so it's the opal equivalent to `$(".edit")` in javacript.
-And then we call focus on it.
+First we select our input. Actually Element[".edit"] is the syntax for the opal-jquery wrapper, so it's the opal equivalent to `$(".edit")` in javacript. And then we call focus on it.
 
 So now our element is focused when it appears... but the cursor is at the beginning of the input, not the end !
 OK, so now in JS we would do `#{edit_element}[0].setSelectionRange(edit_element.val().length, edit_element.val().length)` so in opal we would like to do something like `edit_element[0].set_selection_range(edit_element.length(), edit_element.length())`. However it seems that the opal-jquery wraper does not support the `edit_element[0]` syntax. So it is the perfect opportunity to show you how to access any javascript from our opal code.
@@ -150,9 +146,11 @@ In opal any code inside `\` \`` is executed as javascript. So here we can do :
 
 ```
 after_update do
-  edit_element = Element[".edit"]
-  edit_element.focus
-  `#{edit_element}[0].setSelectionRange(edit_element.val().length, edit_element.val().length)`
+  if state.editing
+    edit_element = Element[".edit"]
+    edit_element.focus
+    `#{edit_element}[0].setSelectionRange(edit_element.val().length, edit_element.val().length)`
+  end
 end
 ```
 
@@ -185,7 +183,7 @@ input(class: "edit", value: params.todo.title).on(:blur) do
 end.on(:change) do |e|
   params.todo.title = e.target.value
 end.on(:key_down) do |e|
-  if e.key_code == 13
+  if e.key_code == 13  # the 13 key_code is the return key
     params.todo.save
     state.editing! false
   end
@@ -204,36 +202,40 @@ module Components
 
 
       after_update do
-        edit_element = Element[".edit"]
-        edit_element.focus
-        `#{edit_element}[0].setSelectionRange(edit_element.val().length, edit_element.val().length)`
+        if state.editing
+          edit_element = Element[".edit"]
+          edit_element.focus
+          `#{edit_element}[0].setSelectionRange(edit_element.val().length, edit_element.val().length)`
+        end
       end
 
       def render
         li(class: "#{params.todo.complete ? "completed" : ""} #{state.editing ? "editing" : ""}") do
-          div(class: "view")do
-            input(type: :checkbox, (params.todo.complete ? :defaultChecked : :unchecked) => true, :class => "toggle").on(:click) do
-              params.todo.complete = !params.todo.complete
-              params.todo.save
+          if state.editing
+            input(class: "edit", value: params.todo.title).on(:blur) do
+              state.editing! false if state.editing
+            end.on(:change) do |e|
+              params.todo.title = e.target.value
+            end.on(:key_down) do |e|
+              if e.key_code == 13
+                params.todo.save
+                state.editing! false
+              end
             end
-            label do
-              params.todo.title
-            end.on(:doubleClick) do
-              state.editing! true
-            end
-            a(class: :destroy).on(:click) do
-              params.todo.destroy
-            end
-
-          end
-          input(class: "edit", value: params.todo.title).on(:blur) do
-            state.editing! false if state.editing
-          end.on(:change) do |e|
-            params.todo.title = e.target.value
-          end.on(:key_down) do |e|
-            if e.key_code == 13
-              params.todo.save
-              state.editing! false
+          else
+            div(class: "view")do
+              input(type: :checkbox, (params.todo.complete ? :defaultChecked : :unchecked) => true, :class => "toggle").on(:click) do
+                params.todo.complete = !params.todo.complete
+                params.todo.save
+              end
+              label do
+                params.todo.title
+              end.on(:doubleClick) do
+                state.editing! true
+              end
+              a(class: :destroy).on(:click) do
+                params.todo.destroy
+              end
             end
           end
 
@@ -244,9 +246,6 @@ module Components
 end
 
 ```
-
-Each HTML components have their handlers follower them, and we instantly know what the code associated to them is.
-
 
 #### How it works:
 
