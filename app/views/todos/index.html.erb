@@ -1,14 +1,14 @@
 <section class="todoapp">
   <header class="header">
     <h1>todos</h1>
-    <%= react_component "TitleInput", todo: Todo.new %>
+    <%= react_component "TopBar" %>
     <!-- <input class="new-todo" placeholder="What needs to be done?" autofocus=""> -->
   </header>
   <section class="main" style="display: block;">
     <!-- <input class="toggle-all" type="checkbox"> -->
     <label for="toggle-all">Mark all as complete</label>
     <ul class="todo-list">
-      <% Todo.all.each do |todo| %>
+      <% @todos.each do |todo| %>
         <%= react_component "TodoItem", todo: todo %>
       <% end %>
     </ul>
