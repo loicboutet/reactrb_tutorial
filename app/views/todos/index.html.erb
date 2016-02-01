@@ -1,7 +1,7 @@
 <section class="todoapp">
   <header class="header">
     <h1>todos</h1>
-    <h2 class="new_todo"><%= link_to 'New Todo', new_todo_path %></h2>
+    <%= react_component "TitleInput", todo: Todo.new %>
     <!-- <input class="new-todo" placeholder="What needs to be done?" autofocus=""> -->
   </header>
   <section class="main" style="display: block;">
