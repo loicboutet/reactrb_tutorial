@@ -4,6 +4,16 @@ GIT
   specs:
     database_cleaner (1.5.1)
 
+GIT
+  remote: https://github.com/zetachang/react.rb.git
+  revision: 97d887df27464950302199cb349fdb807364d07e
+  branch: issue-125
+  specs:
+    reactive-ruby (0.7.39)
+      opal (= 0.8.0)
+      opal-activesupport (>= 0.2.0)
+      opal-browser (= 0.2.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -194,10 +204,6 @@ GEM
       therubyracer
     reactive-router (0.7.11)
       reactive-ruby
-    reactive-ruby (0.7.36)
-      opal (= 0.8.0)
-      opal-activesupport (>= 0.2.0)
-      opal-browser (= 0.2.0)
     reactive_rails_generator (0.2.0)
       rails (>= 4.0.0)
     ref (2.0.0)
@@ -306,7 +312,7 @@ DEPENDENCIES
   react-router-rails (~> 0.13.3)
   reactive-record
   reactive-router
-  reactive-ruby
+  reactive-ruby!
   reactive_rails_generator
   rspec
   rspec-collection_matchers

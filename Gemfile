@@ -65,7 +65,7 @@ group :test do
   gem "poltergeist"
 end
 
-gem 'reactive-ruby'
+gem 'reactive-ruby', git: "https://github.com/zetachang/react.rb.git", branch: "issue-125"
 gem 'react-rails', '~> 1.3.0'
 gem 'opal-rails', '>= 0.8.1'
 gem 'therubyracer', platforms: :ruby

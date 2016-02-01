@@ -1,147 +1,156 @@
 # Getting started with React.rb and Rails
 
-## Chapter 3 - A Component linked to a Model
+## Chapter 4 - Re-using component
 
-So in chapter 2 we have seen how to display a basic component. Now we will make a component to update our Todo model.
-See the list of todos? Noticed how annoying it is to have to go to another page in order to edit them? Time to improve
-our UI. Let's do an in-place editing of those todos.
+So now that we are more familiar with components, one of main advantage of using components is to re-use them. We will see that here by extracting the editing input from chapter_3 into a separate component, and then re-use it at the top of our app to create new todos directly from our main page.
 
-First we have to create our component file. Like last time we can do :
-* `bundle exec rails g reactrb:component Todos::TodoItem`
+OK, let's go ahead and use the generator to create a new component :
 
-Which will create a file app/views/components/todos/todo_item.rb
-An interesting thing to consider here, is the name we gave the component. We did not call it "Todo". Why? Because components
-are *classes*. Which means that the class of our component would be called "Todo"... Which is the class name of the *model* Todo.
-
-
-
-
-
-## Chapter 2 - Our first React.rb Component
-
-Now that we have installed React.rb and that everything is running, it's time to make our first component !
-
-In order to do that, we will use the generator :
-
-* run `bundle exec rails g reactrb:component Todos::Footer`
-
-A file "footer.rb" will be created in app/views/components/todos/
-As you can see our component is a normal ruby class. You will notice that our class has a render method. It this method
-that is called when the component is displayed (or rendered). We will now put the code of our footer inside this component
-to see how a component is displayed.
-
-So we want our component to render the following code from app/views/todos/index.html.erb :
 ```
-  <footer class="footer" style="display: block;">
-    <span class="todo-count"><%= pluralize(@uncomplete_todo.count, 'item')%> left</span>
-    <ul class="filters">
-      <li>
-        <a href="/todos" class=<%= "selected" if @scope == "all" %>>All</a>
-      </li>
-      <li>
-        <a href="/todos?scope=active" class=<%= "selected" if @scope == "active" %>>Active</a>
-      </li>
-      <li>
-        <a href="/todos?scope=complete" class=<%= "selected" if @scope == "complete" %>>Completed</a>
-      </li>
-    </ul>
-    <button class="clear-completed" style="display: none;"></button>
-  </footer>
+rails g reactrb:component todos::title_edit
 ```
 
-In a React.rb component, much like you can write html inside the javascript with jsx, there is a very simple dsl to write html
-inside the ruby code. Our previous html becomes :
+Now that this is out of the way, let's look at our input code from last chapter :
 
-```ruby
-  footer(class: "footer", style: {display: "block"}) do
-    span(class: "todo-count") do
-      "#{params.uncomplete_todo.count} #{params.uncomplete_todo.count > 1 ? "items" : "item"} left"
-    end
-    ul(class: "filters") do
-      li { a(class: "#{'selected' if params.scope == "all"}", href: "/todos") { "All" }}
-      li { a(class: "#{'selected' if params.scope == "complete"}", href: "/todos?scope=complete") { "Completed" }}
-      li { a(class: "#{'selected' if params.scope == "active"}", href: "/todos?scope=active") { "Active" }}
-    end
-    button(class: "clear-completed", style: {display: "none"}) { "clear completed" }
+```
+input(class: "edit", value: params.todo.title).on(:blur) do
+  state.editing! false if state.editing
+end.on(:change) do |e|
+  params.todo.title = e.target.value
+end.on(:key_down) do |e|
+  if e.key_code == 13
+    params.todo.save
+    state.editing! false
   end
-```
-
-A few things to notice here :
-1. First, we changed the `<%= pluralize(@uncomplete_todo.count, 'item')%>` which became `"#{params.uncomplete_todo.count} #{params.uncomplete_todo.count > 1 ? "items" : "item"} left"`. Why? We have to remember that this React.rb component will be executed both by the server when prerendering AND by the client's browser after being compiled by Opal. the `pluralize`method is a rails helper, and Opal does not provide at the moment an implementation of the rails helper. So we cannot use it.
-2. we use `params.uncomplete_todo` and `params.scope` instead of @uncomplete_todo and @scope. Why? Same as above, we are executing this code on the browser. @uncomplete_todo and @scope are instance variable of the controller, so we do not have access to them when the code will be executed on the client. In order to solve the problem we have to put at the top of our app/views/components/todos/footer.rb file :
+end
 
 ```
-  param :scope
-  param :uncomplete_todo
+
+Ok, what we can notice here is that the code seem to pretty tied to the TodoItem component, we have `params.todo.title` which would not work outside the todo component, we actually even change the state of the todo component inside the event blur and key_down handlers.
+But do not panic, all of this is very manageable. All the references to params.todo are pretty easy to port. Actually let's handle them right now by adding inside our TitleInput component :
+
+```
+param :todo, type: Todo
 ```
 
-This way we can set those params when invoking the component. Params are very important for React. When you change a param of a component, React automatically re-render the component. We will see after that this is very useful !
+This way the component will know on which todo it needs to handle the title edit.
 
-So our final app/views/components/todos/footer.rb file should be :
+Now the handlers are more tricky because firstly as we have seen they change the state of the todo component, and secondly because we now want to re-use the component at the top of our app, in a place where there will be no state to change on blur and key_down. The best way to solve that and a very common practice is to pass a proc as param. Let's add these new params :
 
-```ruby
-module Components
-  module Todos
-    class Footer < React::Component::Base
+```
+param :on_blur, type: Proc
+param :on_enter, type: Proc
+```
 
-      param :scope
-      param :uncomplete_todo
+And now let's put our input code inside the render function, and calling the right procs :
 
-      def render
-        footer(class: "footer", style: {display: "block"}) do
-          span(class: "todo-count") do
-            "#{params.uncomplete_todo.count} #{params.uncomplete_todo.count > 1 ? "items" : "item"} left"
-          end
-          ul(class: "filters") do
-            li { a(class: "#{'selected' if params.scope == "all"}", href: "/todos") { "All" }}
-            li { a(class: "#{'selected' if params.scope == "complete"}", href: "/todos?scope=complete") { "Completed" }}
-            li { a(class: "#{'selected' if params.scope == "active"}", href: "/todos?scope=active") { "Active" }}
-          end
-          button(class: "clear-completed", style: {display: "none"}) { "clear completed" }
-        end
-      end
+```
+def render
+  input(class: "edit", value: params.todo.title).on(:blur) do
+    params.on_blur
+  end.on(:change) do |e|
+    params.todo.title = e.target.value
+  end.on(:key_down) do |e|
+    if e.key_code == 13
+      params.on_enter
+      params.todo.save
     end
   end
 end
 ```
 
-So now our component is ready ! We just need to call it inside app/views/todos/index.html.erb :
+And now, let's call this new component from the inside of the TodoItem component :
 
 ```
-<section class="todoapp">
-  <header class="header">
-    <h1>todos</h1>
-    <h2 class="new_todo"><%= link_to 'New Todo', new_todo_path %></h2>
-    <!-- <input class="new-todo" placeholder="What needs to be done?" autofocus=""> -->
-  </header>
-  <section class="main" style="display: block;">
-    <!-- <input class="toggle-all" type="checkbox"> -->
-    <label for="toggle-all">Mark all as complete</label>
-    <ul class="todo-list">
-      <% @todos.each do |todo| %>
-        <li class="<%= "completed" if todo.complete? %>">
-          <div class="view">
-            <%= link_to edit_todo_url(todo) do %>
-              <input class="toggle" type="checkbox" <%= "checked" if todo.complete? %> onclick="return  true">
-              <label><%= todo.title %></label>
-            <% end %>
-            <%= link_to '', todo, class: :destroy, method: :delete, data: { confirm: 'Are you sure?' } %>
-          </div>
-        </li>
-      <% end %>
-    </ul>
-  </section>
-  <%= react_component "Footer", scope: @scope, uncomplete_todo: @uncomplete_todo %>
-</section>
+TitleInput todo: params.todo, on_blur: -> {on_cancel}, on_enter: -> {on_cancel}
 ```
 
-You can reload the page and everything... should be the same :) We have just made our first component which is display some HTML according to some params. If you want to check that it is in fact React.rb displaying our footer you can open web tools and check the console. You should see something similar to :
+Here we are using the lambda litteral to pass some proc as params. You'll notice we called the method on_cancel that we have to define in our TodoItem component :
+
 ```
-************************ React Browser Context Initialized ****************************
-isomorphic_helpers.rb:37Reactive record prerendered data being loaded: [Object]
+def cancel_edit
+  state.editing! false if state.editing
+end
 ```
 
-Which is a sure sign that React.rb did some work ! Congratulation !
+Now if we test things out, we can see that everything is working as expected with our new component.
+So now we are almost ready to re-use it. Time do some thinking. We have a TitleEdit component, when we use it inside the TodoItem we pass it 3 things : a todo, 1 proc executed when the user leave the input, and 1 proc executed when the user press enter. So where we will use it at the top of our page, what exactly do we need to pass ?
+First we will pass it a new todo instance, this way when on enter the component will execute a todo.save, it will create a new todo. However, when a save is done, we need to re-provide a new todo instance, otherwise our TitleInput will just change the title of the original instance over and over again. Todo that, let's encapsulate the TitleEdit component inside a top bar component.
+
+```
+rails g reactrb:component todos::top_bar
+
+```
+
+In this TopBar component we will need a todo state where we will store the new todos :
+
+```
+define_state :todo, type: Todo
+```
+
+And now we can define the render :
+
+```
+def render
+  TitleEdit todo: state.todo, on_enter: -> { renew_todo }
+end
+```
+
+We need to define renew_todo :
+
+```
+def renew_todo
+  state.todo! Todo.new
+end
+```
+
+OK, everythng is ready, let's now call the component inside our index.html.erb :
+
+```
+<h1>todos</h1>
+<%= react_component "TopBar" %>
+```
+
+Let's test it... And it fails ! It says :
+
+```
+Exception raised while rendering #<TitleEdit:0x2de>
+    NoMethodError: undefined method `title' for nil
+```
+
+OK, we forgot to initialize the todo state of our new TopBar component. An esay way to do it is to use the callback before_mount, which is called once before the first render (or when the component is mounted if you prefer) :
+
+```
+before_mount do
+  renew_todo
+end
+```
+
+OK, now everything works as expected !
+
+Just for fun we can see that our top bar as the same css as when you edit a todo since it has the .edit class. This is not very nice, so let's add a new params to our TitleEdit, which will have the default value 'edit' :
+
+```
+param css_class: "edit"
+```
+
+And do :
+
+```
+input(class: param.css_class, defaultValue: params.todo.title).on(:blur) do
+...
+end
+```
+
+and change our call to TitleEdit accordingly in the TopBar component :
+
+```
+TitleEdit todo: state.todo, on_enter: -> { renew_todo }, css_class: "new-todo"
+```
+
+
+Now that we have transformed most of our UI using React components, we'll see how to go full React for our view.
+
 
 
 #### How it works:
