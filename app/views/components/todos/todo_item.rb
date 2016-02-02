@@ -19,12 +19,12 @@ module Components
       end
 
       def render
-        li(class: "#{params.todo.complete ? "completed" : ""} #{state.editing ? "editing" : ""}") do
+        li(key: params.todo.id, class: "#{params.todo.complete ? "completed" : ""} #{state.editing ? "editing" : ""}") do
           if state.editing
             TitleEdit todo: params.todo, on_blur: -> {cancel_edit}, on_enter: -> {cancel_edit}
           else
             div(class: "view")do
-              input(type: :checkbox, (params.todo.complete ? :cdefaultChecked : :unchecked) => true, :class => "toggle").on(:click) do
+              input(type: :checkbox, (params.todo.complete ? :checked : :unchecked) => true, :class => "toggle").on(:click) do
                 params.todo.complete = !params.todo.complete
                 params.todo.save
               end

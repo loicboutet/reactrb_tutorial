@@ -6,10 +6,10 @@ module Components
       param :todo, type: Todo
       param :on_blur, type: Proc
       param :on_enter, type: Proc
-      param css_class: "edit"
+      param css_class: :edit
 
       def render
-        input(class: params.css_class, defaultValue: params.todo.title).on(:blur) do
+        input(class: params.css_class, placeholder: "what is left todo?", value: params.todo.title).on(:blur) do
           params.on_blur
         end.on(:change) do |e|
           params.todo.title = e.target.value

@@ -8,9 +8,9 @@ describe 'chapter 4', :js => true do
     input = find(".new-todo")
     input.set("new todo")
     input.native.send_keys(:return)
-
     Todo.first.title.should eq("new todo")
     page.should have_content("new capybara title")
+
   end
 
 end

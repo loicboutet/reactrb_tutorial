@@ -4,14 +4,17 @@ class TodosController < ApplicationController
   # GET /todos
   # GET /todos.json
   def index
-    @todos = Todo.all
-    @scope = "all"
-    if %w(active complete).include?(params[:scope])
-      @todos = @todos.send(params[:scope].to_sym)
-      @scope = params[:scope]
-    end
-    @uncomplete_todo = Todo.active
+    render_component
   end
+  #
+  #   @todos = Todo.all
+  #   @scope = "all"
+  #   if %w(active complete).include?(params[:scope])
+  #     @todos = @todos.send(params[:scope].to_sym)
+  #     @scope = params[:scope]
+  #   end
+  #   @uncomplete_todo = Todo.active
+  # end
 
   # GET /todos/new
   def new
