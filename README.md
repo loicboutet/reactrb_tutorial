@@ -45,8 +45,6 @@ If you are following along on your computer run
 
 `bundle exec rspec spec/chapter-1.rb -f d`
 
-next: [Chapter 2 - Our first React.rb Component](/blob/02-our-first-react.rb-component)
-
 ### Chapter 1 Notes:
 
 #### `rails g reactrb:install` options:
@@ -58,6 +56,9 @@ next: [Chapter 2 - Our first React.rb Component](/blob/02-our-first-react.rb-com
 `--all` to do all the above
 
 Its recommend to install `--all`.  You can easily remove things later!
+
+For the next instructions : [Chapter 2 - Our first React.rb Component](/blob/master/README_CHAPTER_2.md)
+
 
 #### How it works:
 
