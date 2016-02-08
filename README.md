@@ -45,9 +45,12 @@ If you are following along on your computer run
 
 `bundle exec rspec spec/chapter-1.rb -f d`
 
-### Chapter 1 Notes:
+For the next instructions : [Chapter 2 - Our first React.rb Component](/blob/master/README_CHAPTER_2.md)
 
-#### `rails g reactrb:install` options:
+
+### How it works :
+
+#### `rails g reactrb:install -all` options:
 
 
 `--reactive-router` to install reactive-router
@@ -56,9 +59,6 @@ If you are following along on your computer run
 `--all` to do all the above
 
 Its recommend to install `--all`.  You can easily remove things later!
-
-For the next instructions : [Chapter 2 - Our first React.rb Component](/blob/master/README_CHAPTER_2.md)
-
 
 #### How it works:
 
