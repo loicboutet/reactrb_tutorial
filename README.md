@@ -45,7 +45,7 @@ If you are following along on your computer run
 
 `bundle exec rspec spec/chapter-1.rb -f d`
 
-For the next instructions : [Chapter 2 - Our first React.rb Component](/blob/master/README_CHAPTER_2.md)
+For the next instructions : [Chapter 2 - Our first React.rb Component](/README_CHAPTER_2.md)
 
 
 ### How it works :
