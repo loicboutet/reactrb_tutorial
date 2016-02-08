@@ -17,7 +17,7 @@ To see the results of these changes you can view the `02-adding-a-react-componen
 Of course for best results follow along yourself:
 
 1. clone this repo to your computer
-2. run `bundle exec rake db:migrate` and `bundle exec rake db:test:prepare`
+2. run `bundle installl`, `bundle exec rake db:migrate` and `bundle exec rake db:test:prepare`
 3. follow the instructions for each chapter,
 4. Then run the test specs for the chapter: `bundle exec rspec spec/chapter-xx.rb -f d`
 
